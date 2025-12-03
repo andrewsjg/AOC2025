@@ -42,7 +42,7 @@ func part1(input string) (int, error) {
 	sequences := strings.Split(input, ",")
 
 	for _, seq := range sequences {
-		// split the sequeneces into start and end around the hyphen
+		// split the sequences into start and end around the hyphen
 		sL := strings.Split(seq, "-")[0]
 		sU := strings.Split(seq, "-")[1]
 
