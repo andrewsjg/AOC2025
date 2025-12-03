@@ -78,9 +78,6 @@ func part1(input string) (int, error) {
 					invalidNums = append(invalidNums, invalidNum)
 				}
 			}
-
-			//fmt.Printf("Invalid: %d, patternLen: %d multiplier: %d P1: %d, P2: %d\n\n", invalidNums, patternLen, multiplier, P1, P2)
-
 		}
 	}
 
@@ -93,7 +90,7 @@ func part1(input string) (int, error) {
 
 func part2(input string) (int, error) {
 
-	result := 0 //invalidNums := []int{}
+	result := 0
 	invalidNums := map[int]bool{}
 
 	// split the input into individual sequences around the commmas
