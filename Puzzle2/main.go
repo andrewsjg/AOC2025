@@ -148,7 +148,7 @@ func part2(input string) (int, error) {
 
 	}
 
-	for num, _ := range invalidNums {
+	for num := range invalidNums {
 		result += num
 	}
 	return result, nil
