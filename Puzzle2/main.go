@@ -182,7 +182,7 @@ func main() {
 
 	result, err = part2(input)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error in part1: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error in part2: %v\n", err)
 		os.Exit(1)
 	}
 
