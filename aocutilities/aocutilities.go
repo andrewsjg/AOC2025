@@ -56,3 +56,13 @@ func SplitWords(s string) []string {
 	}
 	return words
 }
+
+func FindIndices[T comparable](items []T, target T) []int {
+	indices := []int{}
+	for i, item := range items {
+		if item == target {
+			indices = append(indices, i)
+		}
+	}
+	return indices
+}
