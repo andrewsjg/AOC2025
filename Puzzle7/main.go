@@ -35,14 +35,15 @@ func readInput(inputFile string) ([][]string, error) {
 
 }
 
-func part1(input [][]string) int {
+func solution(input [][]string) (part1 int, part2 int) {
 	totalSplits := 0
 
 	if len(input) == 0 {
-		return 0
+		return 0, 0
 	}
 
 	width := len(input[0])
+	pathTracker := make([]int, width)
 
 	// Track current beam positions (true = beam present at this position)
 	currentBeamPath := make([]bool, width)
@@ -51,6 +52,7 @@ func part1(input [][]string) int {
 	startIndex := findIndices(input[0], "S")
 	if len(startIndex) > 0 {
 		currentBeamPath[startIndex[0]] = true
+		pathTracker[startIndex[0]] = 1
 	}
 
 	// Process each subsequent row
@@ -64,6 +66,10 @@ func part1(input [][]string) int {
 				if line[i] == "^" {
 					// Beam hits a splitter
 					totalSplits++
+
+					pathTracker[i-1] += pathTracker[i]
+					pathTracker[i+1] += pathTracker[i]
+					pathTracker[i] = 0
 
 					// Add left beam path
 					if i > 0 {
@@ -84,7 +90,13 @@ func part1(input [][]string) int {
 		currentBeamPath = nextBeamPath
 	}
 
-	return totalSplits
+	totalPaths := 0
+
+	for _, paths := range pathTracker {
+		totalPaths += paths
+	}
+
+	return totalSplits, totalPaths
 }
 
 func main() {
@@ -96,8 +108,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	totalSpits := part1(input)
-	fmt.Printf("Total Spits: %d\n", totalSpits)
+	totalSpits, totalPaths := solution(input)
+	fmt.Printf("Part 1 Total Spits: %d\nPart 2 Total Paths: %d\n", totalSpits, totalPaths)
+
 }
 
 func findIndices(chars []string, target string) []int {
