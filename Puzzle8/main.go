@@ -215,9 +215,9 @@ func (uf *UnionFind) GetSizes() []int {
 }
 
 func main() {
-	// Choose input file and number of connections
-	inputFile := "input.txt" // Change to "input.txt" for the full puzzle
-	numConnections := 1000   // Change to 1000 for the full puzzle
+
+	inputFile := "input.txt"
+	numConnections := 1000
 
 	input, err := readInput(inputFile)
 	if err != nil {
