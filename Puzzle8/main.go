@@ -66,7 +66,7 @@ func makeSceneData(points []Point3D, lines []Pair) SceneData {
 	return scene
 }
 
-func part1Visualisation(scene SceneData) {
+func visualise(scene SceneData) {
 
 	// Work out the circuits
 
@@ -156,6 +156,74 @@ func part1(points []Point3D, numConnections int) (SceneData, int) {
 	return scene, answer
 }
 
+func part2(points []Point3D) (SceneData, int) {
+	// Initialize Union-Find structure
+	uf := NewUnionFind(len(points))
+
+	type IndexedPair struct {
+		i        int
+		j        int
+		Distance float64
+	}
+
+	pairs := []IndexedPair{}
+
+	// Generate all the pairs and their distances
+	for i := 0; i < len(points); i++ {
+		for j := i + 1; j < len(points); j++ {
+			dx := points[i].X - points[j].X
+			dy := points[i].Y - points[j].Y
+			dz := points[i].Z - points[j].Z
+			dist := math.Sqrt(dx*dx + dy*dy + dz*dz)
+
+			pair := IndexedPair{
+				i:        i,
+				j:        j,
+				Distance: dist,
+			}
+			pairs = append(pairs, pair)
+		}
+	}
+
+	// Sort the pairs by distance
+	sort.Slice(pairs, func(i, j int) bool {
+		return pairs[i].Distance < pairs[j].Distance
+	})
+
+	// Connect pairs until we have only 1 circuit
+	connectedPairs := []Pair{}
+	var lastPair IndexedPair
+	numCircuits := len(points) // Start with each point in its own circuit
+
+	for _, pair := range pairs {
+		// Try to union the two points
+		if uf.Union(pair.i, pair.j) {
+			numCircuits-- // One less circuit after successful union
+			lastPair = pair
+
+			// Store for visualization
+			connectedPairs = append(connectedPairs, Pair{
+				From:     points[pair.i],
+				To:       points[pair.j],
+				Distance: pair.Distance,
+			})
+
+			// Check if we're done (all in one circuit)
+			if numCircuits == 1 {
+				break
+			}
+		}
+	}
+
+	// Calculate answer: product of X coordinates of the last connection
+	x1 := int(points[lastPair.i].X)
+	x2 := int(points[lastPair.j].X)
+	answer := x1 * x2
+
+	scene := makeSceneData(points, connectedPairs)
+	return scene, answer
+}
+
 // UnionFind data structure for tracking connected components (circuits)
 type UnionFind struct {
 	parent map[int]int
@@ -215,9 +283,10 @@ func (uf *UnionFind) GetSizes() []int {
 }
 
 func main() {
-
-	inputFile := "input.txt"
+	// Configuration
+	inputFile := "input.txt" // "testinput.txt" or "input.txt"
 	numConnections := 1000
+	runPart2 := true // Set to true for Part 2, false for Part 1
 
 	input, err := readInput(inputFile)
 	if err != nil {
@@ -225,46 +294,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	scene, answer := part1(input, numConnections)
-	fmt.Printf("Part 1 sum of three largest circuits: %d\n\n", answer)
+	var scene SceneData
+	var answer int
+
+	if runPart2 {
+		scene, answer = part2(input)
+		fmt.Printf("Part 2 - sum of last two connected junctions: %d\n\n", answer)
+	} else {
+		scene, answer = part1(input, numConnections)
+		fmt.Printf("Part 1 - sum of three largest circuits: %d\n\n", answer)
+	}
 
 	// Visualise it for fun
-	part1Visualisation(scene)
-}
-
-func findClosestPair(points []Point3D) (Point3D, Point3D, float64) {
-	if len(points) < 2 {
-		panic("need at least 2 points")
-	}
-
-	minDistSq := math.MaxFloat64
-	var closest1, closest2 Point3D
-
-	for i := 0; i < len(points); i++ {
-		for j := i + 1; j < len(points); j++ {
-			// Early termination: skip if any single dimension exceeds current min
-			dx := float64(points[i].X - points[j].X)
-			if dx*dx >= minDistSq {
-				continue
-			}
-
-			dy := float64(points[i].Y - points[j].Y)
-			if dx*dx+dy*dy >= minDistSq {
-				continue
-			}
-
-			dz := float64(points[i].Z - points[j].Z)
-			distSq := dx*dx + dy*dy + dz*dz
-
-			if distSq < minDistSq {
-				minDistSq = distSq
-				closest1 = points[i]
-				closest2 = points[j]
-			}
-		}
-	}
-
-	return closest1, closest2, math.Sqrt(minDistSq)
+	visualise(scene)
 }
 
 const htmlTemplate = `<!DOCTYPE html>
