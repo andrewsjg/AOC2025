@@ -30,6 +30,7 @@ go.work.sum
 .env
 input.txt
 testinput.txt
+puzzle.txt
 
 
 # Editor/IDE
